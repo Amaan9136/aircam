@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AirCam - Desktop</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="dashboard">
+<h1>AirCam Dashboard</h1>
+<div class="pair-row">
+<button id="connectBtn" class="btn">Connect</button>
+</div>
+<div class="video-frame">
+<video id="remoteVideo" autoplay playsinline></video>
+<div id="placeholder" class="placeholder">Waiting for connection...</div>
+</div>
+<p id="connStatus" class="conn-status">Not connected</p>
+<p class="hint">This device IP: {{ local_ip }}</p>
+</div>
+<script src="/static/webrtc.js"></script>
+<script src="/static/desktop.js"></script>
+</body>
+</html>

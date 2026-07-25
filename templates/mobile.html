@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>AirCam - Mobile</title>
+<link rel="manifest" href="/static/manifest.json">
+<meta name="theme-color" content="#0f0f14">
+<link rel="apple-touch-icon" href="/static/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="mobile-body">
+<div class="camera-wrap">
+<video id="preview" autoplay playsinline muted></video>
+<div class="overlay-top">
+<span id="statusDot" class="status-dot"></span>
+<span id="statusText">Idle</span>
+</div>
+<div class="overlay-bottom">
+<button id="switchBtn" class="icon-btn">Flip</button>
+<button id="startBtn" class="icon-btn primary">Start</button>
+<button id="stopBtn" class="icon-btn" disabled>Stop</button>
+</div>
+</div>
+<p class="hint">Local IP: {{ local_ip }} &middot; Port 5000</p>
+<script src="/static/webrtc.js"></script>
+<script src="/static/mobile.js"></script>
+</body>
+</html>

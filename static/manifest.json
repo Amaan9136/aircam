@@ -1,0 +1,13 @@
+{
+"name": "AirCam",
+"short_name": "AirCam",
+"start_url": "/mobile",
+"display": "standalone",
+"background_color": "#0f0f14",
+"theme_color": "#0f0f14",
+"orientation": "portrait",
+"icons": [
+{ "src": "/static/icon-192.png", "sizes": "192x192", "type": "image/png" },
+{ "src": "/static/icon-512.png", "sizes": "512x512", "type": "image/png" }
+]
+}
