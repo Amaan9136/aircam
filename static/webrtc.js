@@ -1,27 +1,27 @@
 const RTC_CONFIG = { iceServers: [] };
 
-async function postSignal(role, data) {
-    await fetch(`/api/signal/${role}`, {
+async function postSignal(room, role, data) {
+    await fetch(`/api/signal/${room}/${role}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
     });
 }
 
-async function getSignal(role) {
-    const res = await fetch(`/api/signal/${role}`);
+async function getSignal(room, role) {
+    const res = await fetch(`/api/signal/${room}/${role}`);
     return res.json();
 }
 
-async function clearSignal() {
-    await fetch('/api/signal/clear', { method: 'POST' });
+async function clearSignal(room) {
+    await fetch(`/api/signal/${room}/clear`, { method: 'POST' });
 }
 
-function pollUntil(role, check, interval = 1000, timeout = 60000) {
+function pollUntil(room, role, check, interval = 1000, timeout = 60000) {
     return new Promise((resolve, reject) => {
         const start = Date.now();
         const timer = setInterval(async () => {
-            const data = await getSignal(role);
+            const data = await getSignal(room, role);
             if (check(data)) {
                 clearInterval(timer);
                 resolve(data);

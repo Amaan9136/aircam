@@ -1,47 +1,49 @@
-import socket
+import time
+import random
+import string
 from flask import Flask, render_template, request, jsonify
 
 app = Flask(__name__)
 signal_store = {}
+ROOM_TTL = 300
 
-def get_local_ip():
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    try:
-        s.connect(('8.8.8.8', 80))
-        ip = s.getsockname()[0]
-    except Exception:
-        ip = '127.0.0.1'
-    finally:
-        s.close()
-    return ip
+def gen_room():
+    return ''.join(random.choices(string.ascii_uppercase + string.digits, k=4))
+
+def sweep():
+    now = time.time()
+    for key in list(signal_store.keys()):
+        if now - signal_store[key]['ts'] > ROOM_TTL:
+            del signal_store[key]
 
 @app.route('/')
 def index():
-    return render_template('index.html', local_ip=get_local_ip())
+    return render_template('index.html')
 
 @app.route('/mobile')
 def mobile():
-    return render_template('mobile.html', local_ip=get_local_ip())
+    return render_template('mobile.html')
 
 @app.route('/desktop')
 def desktop():
-    return render_template('desktop.html', local_ip=get_local_ip())
+    return render_template('desktop.html', room=gen_room())
 
-@app.route('/api/signal/<role>', methods=['POST'])
-def post_signal(role):
-    signal_store[role] = request.get_json()
+@app.route('/api/signal/<room>/<role>', methods=['POST'])
+def post_signal(room, role):
+    sweep()
+    signal_store[f'{room}:{role}'] = {'data': request.get_json(), 'ts': time.time()}
     return jsonify({'ok': True})
 
-@app.route('/api/signal/<role>', methods=['GET'])
-def get_signal(role):
-    return jsonify(signal_store.get(role) or {})
+@app.route('/api/signal/<room>/<role>', methods=['GET'])
+def get_signal(room, role):
+    entry = signal_store.get(f'{room}:{role}')
+    return jsonify(entry['data'] if entry else {})
 
-@app.route('/api/signal/clear', methods=['POST'])
-def clear_signal():
-    signal_store.clear()
+@app.route('/api/signal/<room>/clear', methods=['POST'])
+def clear_signal(room):
+    for role in ('desktop_offer', 'mobile_answer'):
+        signal_store.pop(f'{room}:{role}', None)
     return jsonify({'ok': True})
 
 if __name__ == '__main__':
-    ip = get_local_ip()
-    print(f'AirCam running. Mobile: http://{ip}:5000/mobile  Desktop: http://{ip}:5000/desktop')
     app.run(host='0.0.0.0', port=5000, debug=True)

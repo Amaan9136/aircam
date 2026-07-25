@@ -2,6 +2,7 @@ const remoteVideo = document.getElementById('remoteVideo');
 const connectBtn = document.getElementById('connectBtn');
 const connStatus = document.getElementById('connStatus');
 const placeholder = document.getElementById('placeholder');
+const roomCode = document.getElementById('roomCode').textContent.trim();
 
 let pc = null;
 
@@ -18,8 +19,8 @@ async function connect() {
     pc.addTransceiver('video', { direction: 'recvonly' });
     const offer = await pc.createOffer();
     await pc.setLocalDescription(offer);
-    await postSignal('desktop_offer', pc.localDescription);
-    const answerData = await pollUntil('mobile_answer', d => d && d.sdp);
+    await postSignal(roomCode, 'desktop_offer', pc.localDescription);
+    const answerData = await pollUntil(roomCode, 'mobile_answer', d => d && d.sdp);
     await pc.setRemoteDescription(new RTCSessionDescription(answerData));
     connStatus.textContent = 'Connected';
 }

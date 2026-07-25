@@ -10,6 +10,7 @@
 <div class="dashboard">
 <h1>AirCam Dashboard</h1>
 <div class="pair-row">
+<span class="room-code">Room: <strong id="roomCode">{{ room }}</strong></span>
 <button id="connectBtn" class="btn">Connect</button>
 </div>
 <div class="video-frame">
@@ -17,7 +18,7 @@
 <div id="placeholder" class="placeholder">Waiting for connection...</div>
 </div>
 <p id="connStatus" class="conn-status">Not connected</p>
-<p class="hint">This device IP: {{ local_ip }}</p>
+<p class="hint">Enter this room code on your phone's AirCam app</p>
 </div>
 <script src="/static/webrtc.js"></script>
 <script src="/static/desktop.js"></script>

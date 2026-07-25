@@ -18,13 +18,15 @@
 <span id="statusDot" class="status-dot"></span>
 <span id="statusText">Idle</span>
 </div>
+<div class="overlay-room">
+<input id="roomInput" type="text" placeholder="Room code" maxlength="4">
+</div>
 <div class="overlay-bottom">
 <button id="switchBtn" class="icon-btn">Flip</button>
 <button id="startBtn" class="icon-btn primary">Start</button>
 <button id="stopBtn" class="icon-btn" disabled>Stop</button>
 </div>
 </div>
-<p class="hint">Local IP: {{ local_ip }} &middot; Port 5000</p>
 <script src="/static/webrtc.js"></script>
 <script src="/static/mobile.js"></script>
 </body>
