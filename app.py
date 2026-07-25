@@ -28,6 +28,10 @@ def mobile():
 def desktop():
     return render_template('desktop.html', room=gen_room())
 
+@app.route('/desktop/clean/<room>')
+def desktop_clean(room):
+    return render_template('desktop_clean.html', room=room)
+
 @app.route('/api/signal/<room>/<role>', methods=['POST'])
 def post_signal(room, role):
     sweep()

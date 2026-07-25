@@ -1,41 +1,36 @@
-# Using AirCam
+# AirCam
 
-AirCam turns your phone into a wireless webcam for your computer. No install
-needed — just open the links below.
+Turn your phone into a wireless webcam over the local network or internet, using WebRTC with a simple signaling server.
 
-**App:** https://aircam.onrender.com
+## How it works
 
-## Setup
+1. Open `/desktop` on your computer, it generates a 4 character room code
+2. Open `/mobile` on your phone, enter that room code, tap Start
+3. The phone streams its camera to the desktop via WebRTC
 
-1. On your **computer**, open:
-   ```
-   https://aircam.onrender.com/desktop
-   ```
-   A room code is shown at the top. Keep this tab open.
+## Using with OBS
 
-2. On your **phone**, open:
-   ```
-   https://aircam.onrender.com/mobile
-   ```
-   Allow camera access when prompted.
+Do not use `/desktop` as a Browser Source, it captures the full dashboard UI (title, connect button, room code box).
 
-3. On the phone page, enter the room code from step 1 and tap **Start**.
+Instead, use the clean route:
 
-4. Back on your computer, click **Connect**. Your phone's camera feed
-   appears in the dashboard.
+```
+/desktop/clean/<room>
+```
 
-## Using it as a virtual camera
+Replace `<room>` with the room code shown on `/desktop`. This page shows only the video feed on a black background, connects automatically, and has no dashboard chrome, so OBS captures just the camera output.
 
-To use the phone camera inside Google Meet, Zoom, or other apps, see
-[OBS Setup](OBS%20Setup.md) — it walks through routing the stream via OBS
-Virtual Camera so any app can pick it as a camera source.
+Steps:
+1. Open `/desktop`, note the room code
+2. On your phone, open AirCam, enter the room code, tap Start
+3. In OBS, add a Browser Source, set the URL to `https://<your-domain>/desktop/clean/<room>`
+4. The stream appears in OBS with no extra UI
 
-## Notes
+## Running locally
 
-- Keep both the phone and desktop tabs open while streaming.
-- Each session generates its own room code, so multiple people can use
-  AirCam at the same time without interfering with each other.
-- Room codes expire after 5 minutes of inactivity — refresh the desktop
-  page to get a new one if the connection times out.
-- Use the **Flip** button on the phone to switch between front and back
-  cameras.
+```
+pip install -r requirements.txt
+python app.py
+```
+
+Then open `http://localhost:5000`.
