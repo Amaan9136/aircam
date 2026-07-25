@@ -19,3 +19,4 @@ async function connect() {
 }
 
 connect();
+watchOrientation(roomCode, remoteVideo);

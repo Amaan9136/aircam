@@ -32,3 +32,16 @@ function pollUntil(room, role, check, interval = 1000, timeout = 60000) {
         }, interval);
     });
 }
+
+function applyOrientation(el, angle) {
+    const swap = angle === 90 || angle === 270;
+    el.style.transform = angle === 180 ? 'rotate(180deg)' : swap ? `rotate(${angle}deg)` : '';
+    el.classList.toggle('swapped', swap);
+}
+
+function watchOrientation(room, el) {
+    setInterval(async () => {
+        const data = await getSignal(room, 'orientation');
+        if (data && typeof data.angle === 'number') applyOrientation(el, data.angle);
+    }, 1000);
+}

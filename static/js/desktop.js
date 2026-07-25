@@ -26,3 +26,4 @@ async function connect() {
 }
 
 connectBtn.addEventListener('click', connect);
+watchOrientation(roomCode, remoteVideo);

@@ -46,8 +46,7 @@ def get_signal(room, role):
 
 @app.route('/api/signal/<room>/clear', methods=['POST'])
 def clear_signal(room):
-    for role in ('desktop_offer', 'mobile_answer'):
-        signal_store.pop(f'{room}:{role}', None)
+    signal_store.pop(f'{room}:mobile_answer', None)
     return jsonify({'ok': True})
 
 if __name__ == '__main__':

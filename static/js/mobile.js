@@ -9,6 +9,22 @@ const roomInput = document.getElementById('roomInput');
 let localStream = null;
 let pc = null;
 let facingMode = 'environment';
+let activeRoom = null;
+let currentAngle = 0;
+
+function getOrientationAngle() {
+    if (screen.orientation && typeof screen.orientation.angle === 'number') return screen.orientation.angle;
+    if (typeof window.orientation === 'number') return ((window.orientation % 360) + 360) % 360;
+    return 0;
+}
+
+async function reportOrientation() {
+    if (!activeRoom) return;
+    const angle = getOrientationAngle();
+    if (angle === currentAngle) return;
+    currentAngle = angle;
+    await postSignal(activeRoom, 'orientation', { angle });
+}
 
 async function getCameraStream() {
     if (!navigator.mediaDevices) {
@@ -55,6 +71,9 @@ async function startStreaming() {
     const answer = await pc.createAnswer();
     await pc.setLocalDescription(answer);
     await postSignal(room, 'mobile_answer', pc.localDescription);
+    activeRoom = room;
+    currentAngle = -1;
+    await reportOrientation();
     startBtn.disabled = true;
     stopBtn.disabled = false;
     roomInput.disabled = true;
@@ -62,6 +81,7 @@ async function startStreaming() {
 
 function stopStreaming() {
     if (pc) { pc.close(); pc = null; }
+    activeRoom = null;
     statusDot.classList.remove('live');
     statusText.textContent = 'Idle';
     startBtn.disabled = false;
@@ -82,6 +102,9 @@ switchBtn.addEventListener('click', async () => {
         if (sender) sender.replaceTrack(localStream.getVideoTracks()[0]);
     }
 });
+
+window.addEventListener('orientationchange', reportOrientation);
+if (screen.orientation) screen.orientation.addEventListener('change', reportOrientation);
 
 startCamera();
 
