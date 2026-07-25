@@ -11,6 +11,9 @@ let pc = null;
 let facingMode = 'environment';
 
 async function getCameraStream() {
+    if (!navigator.mediaDevices) {
+        throw new Error('Camera unavailable, open this page over HTTPS/ngrok http <port>');
+    }
     return navigator.mediaDevices.getUserMedia({
         video: { facingMode, width: { ideal: 1280 }, height: { ideal: 720 } },
         audio: false

@@ -9,14 +9,14 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .mobile-body { padding: 0; margin: 0; overflow: hidden; }
 .camera-wrap { position: relative; width: 100vw; height: 100vh; background: #000; }
 #preview { width: 100%; height: 100%; object-fit: cover; }
-.overlay-top { position: absolute; top: env(safe-area-inset-top, 16px); left: 16px; display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.4); padding: 8px 14px; border-radius: 20px; }
+.overlay-top { position: absolute; top: env(safe-area-inset-top, 16px); left: 16px; display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.4); padding: 8px 14px; border-radius: 20px; z-index: 2; }
 .status-dot { width: 10px; height: 10px; border-radius: 50%; background: #ff4f4f; }
 .status-dot.live { background: #4fff8f; }
-.overlay-room { position: absolute; top: env(safe-area-inset-top, 16px); right: 16px; }
+.overlay-room { position: absolute; top: env(safe-area-inset-top, 16px); right: 16px; z-index: 2; }
 .overlay-room input { width: 90px; padding: 8px 12px; border-radius: 20px; border: none; background: rgba(0,0,0,0.4); color: #fff; font-size: 14px; text-align: center; text-transform: uppercase; }
-.overlay-bottom { position: absolute; bottom: env(safe-area-inset-bottom, 24px); left: 0; right: 0; display: flex; justify-content: center; gap: 16px; }
-.icon-btn { padding: 14px 22px; border-radius: 30px; border: none; background: rgba(255,255,255,0.15); color: #fff; font-size: 15px; font-weight: 600; backdrop-filter: blur(10px); }
-.icon-btn.primary { background: #4f7cff; }
+.overlay-bottom { position: absolute; bottom: calc(env(safe-area-inset-bottom, 0px) + 32px); left: 0; right: 0; display: flex; justify-content: center; align-items: center; gap: 20px; z-index: 2; }
+.icon-btn { padding: 16px 26px; border-radius: 30px; border: 2px solid rgba(255,255,255,0.5); background: rgba(0,0,0,0.55); color: #fff; font-size: 16px; font-weight: 700; backdrop-filter: blur(10px); box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
+.icon-btn.primary { background: #4f7cff; border-color: #4f7cff; }
 .icon-btn:disabled { opacity: 0.4; }
 .dashboard { max-width: 720px; margin: 0 auto; padding: 40px 24px; }
 .dashboard h1 { margin-bottom: 24px; }
