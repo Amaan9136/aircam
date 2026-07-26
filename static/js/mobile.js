@@ -66,17 +66,22 @@ async function startStreaming() {
         }
     };
     statusText.textContent = 'Waiting for viewer...';
-    const offerData = await pollUntil(room, 'desktop_offer', d => d && d.sdp);
-    await pc.setRemoteDescription(new RTCSessionDescription(offerData));
-    const answer = await pc.createAnswer();
-    await pc.setLocalDescription(answer);
-    await postSignal(room, 'mobile_answer', pc.localDescription);
-    activeRoom = room;
-    currentAngle = -1;
-    await reportOrientation();
-    startBtn.disabled = true;
-    stopBtn.disabled = false;
-    roomInput.disabled = true;
+    try {
+        const offerData = await pollUntil(room, 'desktop_offer', d => d && d.sdp);
+        await pc.setRemoteDescription(new RTCSessionDescription(offerData));
+        const answer = await pc.createAnswer();
+        await pc.setLocalDescription(answer);
+        await postSignal(room, 'mobile_answer', pc.localDescription);
+        activeRoom = room;
+        currentAngle = -1;
+        await reportOrientation();
+        startBtn.disabled = true;
+        stopBtn.disabled = false;
+        roomInput.disabled = true;
+    } catch (err) {
+        statusText.textContent = 'Connection timed out';
+        if (pc) { pc.close(); pc = null; }
+    }
 }
 
 function stopStreaming() {

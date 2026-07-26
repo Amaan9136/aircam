@@ -6,7 +6,7 @@ from flask import Flask, render_template, request, jsonify
 
 app = Flask(__name__)
 signal_store = {}
-ROOM_TTL = 300
+ROOM_TTL = 600
 
 def gen_room():
     return ''.join(random.choices(string.ascii_uppercase + string.digits, k=4))
@@ -16,6 +16,13 @@ def sweep():
     for key in list(signal_store.keys()):
         if now - signal_store[key]['ts'] > ROOM_TTL:
             del signal_store[key]
+
+@app.after_request
+def add_cors_headers(response):
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
+    response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
+    return response
 
 @app.route('/')
 def index():

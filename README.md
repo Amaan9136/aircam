@@ -1,6 +1,6 @@
 # AirCam
 
-Turn your phone into a wireless webcam over the local network or internet, using WebRTC with a simple signaling server.
+Turn your phone into a wireless webcam using WebRTC. Stream your phone's camera to a desktop browser or into OBS as a Browser Source.
 
 ## How it works
 
@@ -33,4 +33,6 @@ pip install -r requirements.txt
 python app.py
 ```
 
-Then open `http://localhost:5000`.
+The server listens on `0.0.0.0` on port `5000` (or `$PORT`), so it's reachable from other devices on your network or via a tunnel (e.g. `ngrok http 5000`).
+
+Camera access on mobile requires HTTPS, so use `ngrok` or another HTTPS tunnel when testing across devices instead of `http://<lan-ip>:5000`.

@@ -1,4 +1,4 @@
-const RTC_CONFIG = { iceServers: [] };
+const RTC_CONFIG = { iceServers: [{ urls: ['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302'] }] };
 
 async function postSignal(room, role, data) {
     await fetch(`/api/signal/${room}/${role}`, {
@@ -17,7 +17,7 @@ async function clearSignal(room) {
     await fetch(`/api/signal/${room}/clear`, { method: 'POST' });
 }
 
-function pollUntil(room, role, check, interval = 1000, timeout = 60000) {
+function pollUntil(room, role, check, interval = 1000, timeout = 600000) {
     return new Promise((resolve, reject) => {
         const start = Date.now();
         const timer = setInterval(async () => {
