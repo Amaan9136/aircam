@@ -11,6 +11,8 @@ let pc = null;
 let facingMode = 'environment';
 let activeRoom = null;
 let currentAngle = 0;
+let offerWatchTimer = null;
+let lastOfferSdp = null;
 
 function getOrientationAngle() {
     if (screen.orientation && typeof screen.orientation.angle === 'number') return screen.orientation.angle;
@@ -45,16 +47,10 @@ async function startCamera() {
     }
 }
 
-async function startStreaming() {
-    const room = roomInput.value.trim().toUpperCase();
-    if (!room) {
-        statusText.textContent = 'Enter the room code from desktop';
-        return;
-    }
-    await clearSignal(room);
-    if (!localStream) await startCamera();
-    if (!localStream) return;
+async function answerOffer(room, offerData) {
+    if (pc) { pc.close(); pc = null; }
     pc = new RTCPeerConnection(RTC_CONFIG);
+    wireIceOutbound(pc, room, 'mobile_answer');
     localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
     pc.onconnectionstatechange = () => {
         if (pc.connectionState === 'connected') {
@@ -65,19 +61,44 @@ async function startStreaming() {
             statusText.textContent = 'Disconnected';
         }
     };
+    await pc.setRemoteDescription(new RTCSessionDescription(offerData));
+    watchCandidates(room, 'desktop_offer', pc);
+    const answer = await pc.createAnswer();
+    await pc.setLocalDescription(answer);
+    await postSignal(room, 'mobile_answer', pc.localDescription);
+}
+
+function watchForOffers(room) {
+    offerWatchTimer = setInterval(async () => {
+        const offerData = await getSignal(room, 'desktop_offer');
+        if (offerData && offerData.sdp && offerData.sdp !== lastOfferSdp) {
+            lastOfferSdp = offerData.sdp;
+            try { await answerOffer(room, offerData); } catch (err) {}
+        }
+    }, 1000);
+}
+
+async function startStreaming() {
+    const room = roomInput.value.trim().toUpperCase();
+    if (!room) {
+        statusText.textContent = 'Enter the room code from desktop';
+        return;
+    }
+    await clearSignal(room);
+    if (!localStream) await startCamera();
+    if (!localStream) return;
     statusText.textContent = 'Waiting for viewer...';
     try {
         const offerData = await pollUntil(room, 'desktop_offer', d => d && d.sdp);
-        await pc.setRemoteDescription(new RTCSessionDescription(offerData));
-        const answer = await pc.createAnswer();
-        await pc.setLocalDescription(answer);
-        await postSignal(room, 'mobile_answer', pc.localDescription);
+        lastOfferSdp = offerData.sdp;
+        await answerOffer(room, offerData);
         activeRoom = room;
         currentAngle = -1;
         await reportOrientation();
         startBtn.disabled = true;
         stopBtn.disabled = false;
         roomInput.disabled = true;
+        watchForOffers(room);
     } catch (err) {
         statusText.textContent = 'Connection timed out';
         if (pc) { pc.close(); pc = null; }
@@ -86,7 +107,9 @@ async function startStreaming() {
 
 function stopStreaming() {
     if (pc) { pc.close(); pc = null; }
+    if (offerWatchTimer) { clearInterval(offerWatchTimer); offerWatchTimer = null; }
     activeRoom = null;
+    lastOfferSdp = null;
     statusDot.classList.remove('live');
     statusText.textContent = 'Idle';
     startBtn.disabled = false;

@@ -17,6 +17,34 @@ async function clearSignal(room) {
     await fetch(`/api/signal/${room}/clear`, { method: 'POST' });
 }
 
+async function postCandidate(room, role, candidate) {
+    await fetch(`/api/signal/${room}/${role}/candidates`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(candidate)
+    });
+}
+
+function watchCandidates(room, role, pc) {
+    let since = 0;
+    const timer = setInterval(async () => {
+        if (pc.signalingState === 'closed') { clearInterval(timer); return; }
+        const res = await fetch(`/api/signal/${room}/${role}/candidates?since=${since}`);
+        const list = await res.json();
+        since += list.length;
+        for (const candidate of list) {
+            try { await pc.addIceCandidate(candidate); } catch (err) {}
+        }
+    }, 1000);
+    return timer;
+}
+
+function wireIceOutbound(pc, room, role) {
+    pc.onicecandidate = event => {
+        if (event.candidate) postCandidate(room, role, event.candidate.toJSON());
+    };
+}
+
 function pollUntil(room, role, check, interval = 1000, timeout = 600000) {
     return new Promise((resolve, reject) => {
         const start = Date.now();

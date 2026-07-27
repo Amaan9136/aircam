@@ -51,9 +51,26 @@ def get_signal(room, role):
     entry = signal_store.get(f'{room}:{role}')
     return jsonify(entry['data'] if entry else {})
 
+@app.route('/api/signal/<room>/<role>/candidates', methods=['POST'])
+def post_candidate(room, role):
+    key = f'{room}:{role}:candidates'
+    sweep()
+    entry = signal_store.setdefault(key, {'data': [], 'ts': time.time()})
+    entry['data'].append(request.get_json())
+    entry['ts'] = time.time()
+    return jsonify({'ok': True})
+
+@app.route('/api/signal/<room>/<role>/candidates', methods=['GET'])
+def get_candidates(room, role):
+    since = int(request.args.get('since', 0))
+    entry = signal_store.get(f'{room}:{role}:candidates')
+    data = entry['data'] if entry else []
+    return jsonify(data[since:])
+
 @app.route('/api/signal/<room>/clear', methods=['POST'])
 def clear_signal(room):
-    signal_store.pop(f'{room}:mobile_answer', None)
+    for role in ('mobile_answer', 'desktop_offer', 'desktop_offer:candidates', 'mobile_answer:candidates'):
+        signal_store.pop(f'{room}:{role}', None)
     return jsonify({'ok': True})
 
 if __name__ == '__main__':

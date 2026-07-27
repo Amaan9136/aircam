@@ -10,6 +10,7 @@ async function connect() {
     connStatus.textContent = 'Connecting...';
     await clearSignal(roomCode);
     pc = new RTCPeerConnection(RTC_CONFIG);
+    wireIceOutbound(pc, roomCode, 'desktop_offer');
     pc.ontrack = event => {
         remoteVideo.srcObject = event.streams[0];
         placeholder.style.display = 'none';
@@ -24,6 +25,7 @@ async function connect() {
     try {
         const answerData = await pollUntil(roomCode, 'mobile_answer', d => d && d.sdp);
         await pc.setRemoteDescription(new RTCSessionDescription(answerData));
+        watchCandidates(roomCode, 'mobile_answer', pc);
         connStatus.textContent = 'Connected';
     } catch (err) {
         connStatus.textContent = 'Connection timed out';
